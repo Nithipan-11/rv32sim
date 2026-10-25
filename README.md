@@ -2,7 +2,7 @@
 
 A RISC-V instruction-set simulator in C++20 for **RV32IM + Zicsr**, machine mode, with precise traps.
 
-It passes the official [riscv-tests](https://github.com/riscv-software-src/riscv-tests) suite and runs bare-metal C programs at **120 to 160 million instructions per second**. It also serves as a golden reference model for my Verilog CPU, [simple-riscv-cpu](https://github.com/Nithipan-11/simple-riscv-cpu): the two run in lockstep and are compared instruction by instruction.
+It passes the official [riscv-tests](https://github.com/riscv-software-src/riscv-tests) suite and runs bare-metal C programs at roughly **120 to 160 million instructions per second**. It also serves as a golden reference model for my Verilog CPU, [simple-riscv-cpu](https://github.com/Nithipan-11/simple-riscv-cpu): the two run in lockstep and are compared instruction by instruction.
 
 | Check | Result |
 |---|---|
@@ -29,7 +29,7 @@ The wrong ones are `sltu sltiu slli srli srai lb lbu sb sh blt bgeu lui auipc ja
 
 ## Performance
 
-These numbers are from a 2-core Intel Xeon @ 2.10 GHz with g++ 13.3 at `-O2`. Each figure is the median of 3 runs.
+These numbers are from a 2-core Intel Xeon @ 2.10 GHz with g++ 13.3 at `-O2`. Each figure is the median of 3 runs; on a shared machine they move by about ±15% between sessions.
 
 | Program | Instructions | MIPS (decode cache) | MIPS (no cache) | Speedup |
 |---|---:|---:|---:|---:|

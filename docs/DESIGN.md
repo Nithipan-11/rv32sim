@@ -134,7 +134,7 @@ std::bitset<1024>      valid;     // is that slot up to date?
 - **Every store clears the valid bit of the word it touches** (`store8` does `p.valid.reset(o >> 2)`). This is what keeps **self-modifying code** correct: code that writes new instructions gets them re-decoded on the next fetch. `test_memory.cpp` has a test for exactly this.
 - `fence.i` (the instruction programs use to say "I've changed my code") flushes every page's valid bits.
 
-Result: **1.7× to 2.2× faster** across the benchmarks (`--no-decode-cache` turns it off for comparison).
+Result: **about 1.5× to 2.2× faster** across the benchmarks (the exact figure varies from run to run) (`--no-decode-cache` turns it off for comparison).
 
 ### Harvard mode
 Real RISC-V systems, and the riscv-tests, use one memory for code and data (von Neumann). The Verilog CPU has separate `imem` and `dmem` (Harvard). `Cpu(Memory& imem, Memory& dmem)` fetches from one and loads and stores to the other. Without this, the sample program's `sw x3, 0(x0)` would overwrite its own first instruction in the simulator but not in the hardware.

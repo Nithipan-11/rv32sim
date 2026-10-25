@@ -1,14 +1,15 @@
 # Build the bare-metal benchmark ELFs with a RISC-V GCC.
-CC ?= riscv64-unknown-elf-gcc
+# Not CC: make predefines CC=cc, so `CC ?=` would never take effect.
+RISCV_CC ?= riscv64-unknown-elf-gcc
 OUT ?= ../build/bench
 CFLAGS = -march=rv32im_zicsr -mabi=ilp32 -O2 -ffreestanding -fno-builtin -nostdlib -nostartfiles \
-         -static -mcmodel=medany -Iruntime -Wall
+         -static -mcmodel=medany -Iruntime -Wall -Wl,--no-warn-rwx-segments
 PROGS = sieve matmul qsort crc32
 
 all: $(addprefix $(OUT)/,$(addsuffix .elf,$(PROGS)))
 
 $(OUT)/%.elf: programs/%.c runtime/crt0.S runtime/rt.c runtime/link.ld | $(OUT)
-	$(CC) $(CFLAGS) -T runtime/link.ld runtime/crt0.S runtime/rt.c $< -lgcc -o $@
+	$(RISCV_CC) $(CFLAGS) -T runtime/link.ld runtime/crt0.S runtime/rt.c $< -lgcc -o $@
 
 $(OUT):
 	mkdir -p $@

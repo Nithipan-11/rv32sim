@@ -1,0 +1,27 @@
+name: ci
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Install toolchains
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends cmake g++ libgtest-dev \
+            gcc-riscv64-unknown-elf iverilog
+      - name: Build
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build -j
+      - name: Unit tests
+        run: ctest --test-dir build --output-on-failure
+      - name: Official riscv-tests (rv32ui, rv32um, rv32mi)
+        run: python3 tests/isa/run_isa_tests.py
+      - name: Differential fuzzing against the Verilog CPU
+        run: python3 cosim/fuzz.py --seeds 500
+      - name: Mutation testing of the fuzzer
+        run: python3 cosim/mutate.py --seeds 100
+      - name: Benchmarks (correctness + speed)
+        run: make -C bench && python3 bench/run_bench.py --repeat 1 | tee -a "$GITHUB_STEP_SUMMARY"
